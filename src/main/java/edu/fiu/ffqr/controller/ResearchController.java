@@ -21,26 +21,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import edu.fiu.ffqr.FFQUserApplication;
 import edu.fiu.ffqr.models.Authenticate;
-import edu.fiu.ffqr.models.SysUser;
-import edu.fiu.ffqr.repositories.AdminRepository;
-import edu.fiu.ffqr.models.Admin;
-import edu.fiu.ffqr.service.SysUserService;
-import edu.fiu.ffqr.service.AdminService;
+import edu.fiu.ffqr.models.Researcher;
+import edu.fiu.ffqr.repositories.ResearcherRepository;
+import edu.fiu.ffqr.service.ResearcherService;
 
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/admins")
-public class AdminController {
+@RequestMapping("/researchers")
+public class ResearchController {
 
     @Autowired
-    private AdminService adminService;
+    private ResearcherService researchService;
     @Autowired
-    private AdminRepository adminRepository;
+    private ResearcherRepository researcherRepository;
 
-    public AdminController() {
+    public ResearchController() {
     }
 
     @GetMapping(produces = "application/json")
@@ -51,69 +48,69 @@ public class AdminController {
     
     
     @GetMapping("/all")
-    public List<Admin> allUsers() throws JsonProcessingException {
+    public List<Researcher> allUsers() throws JsonProcessingException {
         
-        List<Admin> users = adminService.getAll();
+        List<Researcher> users = researchService.getAll();
         return users;
     }  
 
     @GetMapping("/{userID}")
-	public Admin gUserApplication(@PathVariable("userID") String userID) {
-		return adminService.getUserByUserId(userID);
+	public Researcher gUserApplication(@PathVariable("userID") String userID) {
+		return researchService.getUserByUserId(userID);
 	}
     
     @PostMapping("/createuser")
-    public Admin createUser(@RequestBody Admin user) throws JsonProcessingException {
+    public Researcher createUser(@RequestBody Researcher user) throws JsonProcessingException {
 
-      if (adminService.getUserByUsername(user.getUsername()) != null) {
+      if (researchService.getUserByUsername(user.getUsername()) != null) {
             throw new IllegalArgumentException("A user with Username " + user.getUsername() + " already exists");
       }  
-	  return adminService.create(user);
+	  return researchService.create(user);
 	  
   }
-
-  @PostMapping("/updateuser")
-    public void updateUser(@RequestBody Admin user) throws JsonProcessingException {
+    
+    @PostMapping("/create")
+    public Researcher create(@RequestBody Researcher item) throws JsonProcessingException {
         
-        if (adminService.getUserByUserId(user.getUserId()) == null) {
+        if (researchService.getUserByUsername(item.getUsername()) != null) {
+            throw new IllegalArgumentException("A user with Username " + item.getUsername() + " already exists");
+        }
+
+        return researchService.create(item);
+    }
+
+
+  @PutMapping("/updateuser")
+    public void updateUser(@RequestBody Researcher user) throws JsonProcessingException {
+        
+        if (researchService.getUserByUserId(user.getUserId()) == null) {
             throw new IllegalArgumentException("A user with Username " + user.getUsername() + " doesn't exist");
         }
 
-        Admin currentUser = adminService.getUserByUserId(user.getUserId());
+        Researcher currentUser = researchService.getUserByUserId(user.getUserId());
 
         currentUser.setUsername(user.getUsername());
         currentUser.setUserpassword(user.getUserpassword());
         currentUser.setFirstname(user.getFirstname());
-        currentUser.setLastname(user.getLastname());
-        currentUser.setUsertype(user.getUsertype());
+        currentUser.setLastname(user.getLastname());        
+        currentUser.setAssignedResearchInstitutionId(user.getAssignedResearchInstitutionId());
+        currentUser.setLimitNumberOfParticipants(user.getLimitNumberOfParticipants());
+        currentUser.setPrefix(user.getPrefix());
 
-        adminRepository.save(currentUser);
+        researcherRepository.save(currentUser);
 
         //return adminService.create(user);
     }
 
-
-    @PostMapping("/create")
-    public Admin create(@RequestBody Admin item) throws JsonProcessingException {
-        
-        if (adminService.getUserByUsername(item.getUsername()) != null) {
-            throw new IllegalArgumentException("A user with Username " + item.getUsername() + " already exists");
-        }
-
-        return adminService.create(item);
-    }
-
-    
-    
    
 	
 	@PostMapping("/createMany")
-	public ArrayList<Admin> create(@RequestBody ArrayList<Admin> users) {
-		Admin user = null;
+	public ArrayList<Researcher> create(@RequestBody ArrayList<Researcher> users) {
+		Researcher user = null;
 		
-		for(Admin s : users)
+		for(Researcher s : users)
 		{
-			user = adminService.create(s);
+			user = researchService.create(s);
 		}
 		
 		return users;
@@ -123,12 +120,12 @@ public class AdminController {
 	  
 	  @DeleteMapping("/delete")
 	  public String delete(@RequestParam String userId) {
-        adminService.deleteById(userId);
+        researchService.deleteById(userId);
 	  	  return "Deleted " + userId;
       }
       
     @RequestMapping("/login")
-    public boolean login(@RequestBody Admin user) {
+    public boolean login(@RequestBody Researcher user) {
         return
           user.getUsername().equals("user") && user.getUserpassword().equals("password");
     }
