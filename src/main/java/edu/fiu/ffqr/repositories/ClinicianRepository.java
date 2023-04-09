@@ -1,22 +1,15 @@
 package edu.fiu.ffqr.repositories;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import edu.fiu.ffqr.models.Clinician;
 
+import java.util.List;
+
 @Repository
-public interface ClinicianRepository extends MongoRepository<Clinician, String> {
+public interface ClinicianRepository extends UserRepository<Clinician> {
 
+    List<Clinician> findAllByAssignedclinic(String assignedclinic);
 
-  Clinician getUserBy_id(ObjectId _id);
-
-  Clinician getByUserId(String userId);
-	
-  Clinician findByUsername(String username);
-  
-  Clinician getByAbbreviation(String abbreviation);
-    
+    void deleteAllByAssignedclinic(String assignedclinic);
 }

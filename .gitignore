@@ -39,3 +39,16 @@ typings
 
 #Ignore .class files
 *.class
+/target/
+/.idea/
+/.settings/
+ffq-user-service.iml
+/bin/
+/vpproject/
+*.iml
+.classpath
+.project
+/.vs/ffq-user-service/v16/.suo
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
